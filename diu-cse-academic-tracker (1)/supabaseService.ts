@@ -24,7 +24,7 @@ export const supabaseService = {
       password: pass,
       options: {
         data: { full_name: name, section: section, sub_section: subSection },
-        emailRedirectTo: window.location.origin
+        emailRedirectTo: 'https://tracker-diu-q6jr.vercel.app/'
       }
     });
     if (error) throw error;
@@ -39,7 +39,7 @@ export const supabaseService = {
 
   resetPassword: async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/#reset-password`,
+      redirectTo: 'https://tracker-diu-q6jr.vercel.app/#reset-password',
     });
     if (error) throw error;
   },

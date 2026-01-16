@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
@@ -16,7 +17,7 @@ import {
     Zap,
     ArrowLeftRight
 } from 'lucide-react';
-import { Section, AcademicRecord, Theme, AppNotification, Course } from '../types';
+import { Section, AcademicRecord, Theme, AppNotification, Course, Batch } from '../types';
 import Dashboard from './Dashboard';
 import CalendarView from './CalendarView';
 import CourseView from './CourseView';
@@ -28,8 +29,9 @@ import { supabaseService, supabase } from '../supabaseService';
 import { useAuth } from '../AuthContext';
 
 interface Props {
+    batches: Batch[];
     selectedBatch: string | null;
-    setSelectedBatch: (b: string | null) => void;
+    onBatchChange: (b: string | null) => void;
     selectedSection: Section | null;
     setSelectedSection: (s: Section | null) => void;
     selectedSubSection: string | null;
@@ -46,8 +48,9 @@ interface Props {
 }
 
 const MainDashboard: React.FC<Props> = ({
+    batches,
     selectedBatch,
-    setSelectedBatch,
+    onBatchChange,
     selectedSection,
     setSelectedSection,
     selectedSubSection,
@@ -62,11 +65,13 @@ const MainDashboard: React.FC<Props> = ({
     notifications,
     initialTab = 'dashboard'
 }) => {
+    const navigate = useNavigate();
     const { profile: userProfile } = useAuth();
     const [activeTab, setActiveTab] = useState(initialTab);
     const [showNotifications, setShowNotifications] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isSectionSwitcherOpen, setIsSectionSwitcherOpen] = useState(false);
+    const [isBatchSwitcherOpen, setIsBatchSwitcherOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
     // Sync tab to localStorage
@@ -77,6 +82,15 @@ const MainDashboard: React.FC<Props> = ({
         }
     };
 
+    const handleBatchChange = (batchId: string) => {
+        console.log('[MainDashboard] handleBatchChange invoked for:', batchId);
+        const batchName = batches.find(b => b.id === batchId)?.name || '';
+        onBatchChange(batchId);
+        localStorage.setItem('selectedBatch', batchId);
+        localStorage.setItem('selectedBatchName', batchName);
+        setIsBatchSwitcherOpen(false);
+    };
+
     const navItems = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, label: 'Overview' },
         { id: 'calendar', icon: <CalendarIcon size={20} />, label: 'Schedule' },
@@ -84,7 +98,10 @@ const MainDashboard: React.FC<Props> = ({
         { id: 'groups', icon: <Users size={20} />, label: 'Groups' },
     ];
 
-    const canAccessAdmin = userProfile?.role === 'CR' && userProfile?.is_approved;
+    const hasAdminRole = userProfile?.role === 'CR' && userProfile?.is_approved;
+    const canAccessAdmin = hasAdminRole &&
+        userProfile?.batch_id === selectedBatch &&
+        userProfile?.section === selectedSection;
 
     return (
         <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50 dark:bg-[#020617] transition-colors duration-500 relative">
@@ -123,15 +140,20 @@ const MainDashboard: React.FC<Props> = ({
                     ))}
 
                     <AnimatePresence>
-                        {canAccessAdmin && (
+                        {hasAdminRole && (
                             <motion.button
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 onClick={() => handleTabChange('admin')}
                                 className={`w-full flex items-center gap-4 px-6 py-4 rounded-[1.5rem] transition-all duration-500 group relative mt-8 ${activeTab === 'admin' ? 'bg-emerald-600 text-white shadow-2xl active-glow' : 'text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20'}`}
                             >
-                                <ShieldCheck size={20} />
-                                <span className="font-black text-xs tracking-widest uppercase">Admin Panel</span>
+                                <ShieldCheck size={20} className={!canAccessAdmin ? 'opacity-50' : ''} />
+                                <span className="font-black text-xs tracking-widest uppercase truncate">
+                                    {canAccessAdmin ? 'Admin Panel' : 'Switch to Edit'}
+                                </span>
+                                {!canAccessAdmin && activeTab !== 'admin' && (
+                                    <div className="absolute top-2 right-2 w-2 h-2 bg-amber-500 rounded-full border-2 border-white dark:border-[#0b0f1a]" />
+                                )}
                             </motion.button>
                         )}
                     </AnimatePresence>
@@ -168,11 +190,11 @@ const MainDashboard: React.FC<Props> = ({
                             </button>
                         ) : (
                             <button
-                                onClick={() => setIsSettingsOpen(true)}
-                                className="flex flex-col items-center justify-center gap-2 py-4 rounded-[1.5rem] text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-all"
+                                onClick={() => navigate('/login')}
+                                className="flex flex-col items-center justify-center gap-2 py-4 rounded-[1.5rem] text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-all border border-slate-100 dark:border-slate-800"
                             >
                                 <ShieldCheck size={18} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Admin</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest">Login</span>
                             </button>
                         )}
                     </div>
@@ -186,23 +208,65 @@ const MainDashboard: React.FC<Props> = ({
                         <h2 className="text-lg lg:text-xl font-black text-slate-900 dark:text-white tracking-tight capitalize leading-none mb-1">
                             {activeTab === 'admin' ? 'Admin Control' : 'Schedule & Overview'}
                         </h2>
-                        <div
-                            onClick={() => setIsSectionSwitcherOpen(!isSectionSwitcherOpen)}
-                            className={`flex items-center gap-1 text-[9px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-[0.2em] px-2 py-1 -ml-2 rounded-lg transition-all cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950/30`}
-                        >
-                            Section {selectedSection}{selectedSubSection ? ` - Group ${selectedSubSection}` : ''} <ArrowLeftRight size={10} className="ml-1" />
+                        <div className="flex items-center gap-3">
+                            {/* Batch Switcher */}
+                            <div className="relative">
+                                <div
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsBatchSwitcherOpen(!isBatchSwitcherOpen);
+                                    }}
+                                    className={`flex items-center gap-1 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] px-2 py-1 -ml-2 rounded-lg transition-all cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/40`}
+                                >
+                                    {batches.find(b => b.id === selectedBatch)?.name || 'Select Batch'} <ArrowLeftRight size={10} className="ml-1 opacity-50" />
+                                </div>
+                                <AnimatePresence>
+                                    {isBatchSwitcherOpen && (
+                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute left-0 mt-2 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 p-2 flex flex-col gap-1 z-50 min-w-[160px] shadow-pro" >
+                                            {batches.length === 0 ? (
+                                                <div className="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading...</div>
+                                            ) : (
+                                                batches.map(b => (
+                                                    <button
+                                                        key={b.id}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleBatchChange(b.id);
+                                                        }}
+                                                        className={`px-4 py-2 text-left rounded-xl text-xs font-black transition-all ${selectedBatch === b.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                    >
+                                                        {b.name}
+                                                    </button>
+                                                ))
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <span className="text-slate-300 dark:text-slate-700 font-light">/</span>
+
+                            {/* Section Switcher */}
+                            <div className="relative">
+                                <div
+                                    onClick={() => setIsSectionSwitcherOpen(!isSectionSwitcherOpen)}
+                                    className={`flex items-center gap-1 text-[9px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-[0.2em] px-2 py-1 -ml-2 rounded-lg transition-all cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950/30`}
+                                >
+                                    Section {selectedSection}{selectedSubSection ? ` - Group ${selectedSubSection}` : ''} <ArrowLeftRight size={10} className="ml-1" />
+                                </div>
+
+                                <AnimatePresence>
+                                    {isSectionSwitcherOpen && (
+                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute left-0 mt-2 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 p-2 flex gap-1 z-50 overflow-x-auto max-w-[calc(100vw-48px)] custom-scrollbar shadow-pro" >
+                                            {SECTIONS.map(s => (
+                                                <button key={s} onClick={() => { setSelectedSection(s); setIsSectionSwitcherOpen(false); }} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${selectedSection === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > {s} </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </div>
                     </div>
-
-                    <AnimatePresence>
-                        {isSectionSwitcherOpen && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute left-6 lg:left-8 top-16 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 p-2 flex gap-1 z-50 overflow-x-auto max-w-[calc(100vw-48px)] custom-scrollbar" >
-                                {SECTIONS.map(s => (
-                                    <button key={s} onClick={() => { setSelectedSection(s); setIsSectionSwitcherOpen(false); }} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${selectedSection === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > {s} </button>
-                                ))}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
 
                     <div className="flex items-center gap-2 lg:gap-4">
                         <div className="relative">
@@ -262,10 +326,28 @@ const MainDashboard: React.FC<Props> = ({
                                     />
                                 ) : (
                                     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8 bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 rounded-[3rem]">
-                                        <ShieldCheck size={48} className="text-slate-300 mb-6" />
+                                        <div className="relative mb-6">
+                                            <ShieldCheck size={64} className="text-slate-200 dark:text-slate-800" />
+                                            <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute -top-1 -right-1 w-6 h-6 bg-amber-500 rounded-full border-4 border-white dark:border-[#0b0f1a] flex items-center justify-center shadow-lg" >
+                                                <CogIcon size={10} className="text-white animate-spin-slow" />
+                                            </motion.div>
+                                        </div>
                                         <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">Access Restricted</h3>
-                                        <p className="text-slate-500 text-sm mb-8">This panel is only available to verified Class Representatives.</p>
-                                        <button onClick={() => handleTabChange('dashboard')} className="px-8 py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-indigo-500/20 active-glow">Return to Dashboard</button>
+                                        <p className="text-slate-500 text-sm mb-8 max-w-xs mx-auto">
+                                            You are viewing <span className="text-indigo-500 font-bold">Section {selectedSection}</span>, but you only have editing rights for <span className="text-emerald-500 font-bold">Section {userProfile?.section}</span>.
+                                        </p>
+                                        <div className="flex flex-col gap-3 w-full max-w-[200px]">
+                                            <button
+                                                onClick={() => {
+                                                    if (userProfile?.section) setSelectedSection(userProfile.section);
+                                                    if (userProfile?.batch_id) onBatchChange(userProfile.batch_id);
+                                                }}
+                                                className="px-6 py-3 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-indigo-500/20 active-glow"
+                                            >
+                                                Return to my section
+                                            </button>
+                                            <button onClick={() => handleTabChange('dashboard')} className="px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Go to Overview</button>
+                                        </div>
                                     </div>
                                 )
                             )}
@@ -288,18 +370,23 @@ const MainDashboard: React.FC<Props> = ({
                         )}
                     </button>
                 ))}
-                {canAccessAdmin ? (
+                {hasAdminRole ? (
                     <button
                         onClick={() => handleTabChange('admin')}
                         className={`p-4 rounded-2xl transition-all duration-500 relative flex flex-col items-center gap-1 ${activeTab === 'admin' ? 'bg-emerald-600 text-white shadow-2xl active-glow' : 'text-slate-400 dark:text-slate-500'}`}
                     >
-                        <ShieldCheck size={20} />
-                        <span className="text-[7px] font-black uppercase tracking-widest">Admin</span>
+                        <ShieldCheck size={20} className={!canAccessAdmin ? 'opacity-50' : ''} />
+                        <span className="text-[7px] font-black uppercase tracking-widest">
+                            {canAccessAdmin ? 'Admin' : 'Edit'}
+                        </span>
+                        {!canAccessAdmin && (
+                            <div className="absolute top-2 right-4 w-1.5 h-1.5 bg-amber-500 rounded-full border border-white dark:border-slate-950" />
+                        )}
                     </button>
                 ) : (
-                    <button onClick={toggleTheme} className="p-4 rounded-2xl text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all flex flex-col items-center gap-1" >
-                        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                        <span className="text-[7px] font-black uppercase tracking-widest">Theme</span>
+                    <button onClick={() => navigate('/login')} className="p-4 rounded-2xl text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all flex flex-col items-center gap-1" >
+                        <ShieldCheck size={20} />
+                        <span className="text-[7px] font-black uppercase tracking-widest">Admin</span>
                     </button>
                 )}
             </nav>

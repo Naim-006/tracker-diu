@@ -143,9 +143,19 @@ const App: React.FC = () => {
           />
         ) : (
           <MainDashboard
+            batches={batches}
             userProfile={profile}
             selectedBatch={selectedBatch}
-            setSelectedBatch={(b) => { setSelectedBatch(b); if (b) localStorage.setItem('selectedBatch', b); }}
+            onBatchChange={(b) => {
+              console.log('[App] onBatchChange triggered with:', b);
+              setSelectedBatch(b);
+              if (b) {
+                localStorage.setItem('selectedBatch', b);
+                const name = batches.find(item => item.id === b)?.name || '';
+                localStorage.setItem('selectedBatchName', name);
+                console.log('[App] Batch update complete:', name);
+              }
+            }}
             selectedSection={selectedSection}
             setSelectedSection={(s) => { setSelectedSection(s); if (s) localStorage.setItem('selectedSection', s); }}
             selectedSubSection={selectedSubSection}
@@ -166,9 +176,19 @@ const App: React.FC = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/admin" element={
           <MainDashboard
+            batches={batches}
             userProfile={profile}
             selectedBatch={selectedBatch}
-            setSelectedBatch={(b) => { setSelectedBatch(b); if (b) localStorage.setItem('selectedBatch', b); }}
+            onBatchChange={(b) => {
+              console.log('[App] onBatchChange triggered with:', b);
+              setSelectedBatch(b);
+              if (b) {
+                localStorage.setItem('selectedBatch', b);
+                const name = batches.find(item => item.id === b)?.name || '';
+                localStorage.setItem('selectedBatchName', name);
+                console.log('[App] Batch update complete:', name);
+              }
+            }}
             selectedSection={selectedSection}
             setSelectedSection={(s) => { setSelectedSection(s); if (s) localStorage.setItem('selectedSection', s); }}
             selectedSubSection={selectedSubSection}

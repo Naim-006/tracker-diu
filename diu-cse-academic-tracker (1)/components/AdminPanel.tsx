@@ -10,12 +10,13 @@ interface Props {
   courses: Course[];
   records: AcademicRecord[];
   section: Section;
+  batchId: string;
   onAddRecord: (record: Omit<AcademicRecord, 'id'>) => Promise<void>;
   onDeleteRecord: (id: string) => Promise<void>;
   onAddCourse?: (course: Course) => void;
 }
 
-const AdminPanel: React.FC<Props> = ({ courses, records, section, onAddRecord, onDeleteRecord, onAddCourse }) => {
+const AdminPanel: React.FC<Props> = ({ courses, records, section, batchId, onAddRecord, onDeleteRecord, onAddCourse }) => {
   const [activeTab, setActiveTab] = useState<'RECORD' | 'COURSE'>('RECORD');
   const [isSuccess, setIsSuccess] = useState(false);
   const [newRecord, setNewRecord] = useState<Partial<AcademicRecord>>({
@@ -36,40 +37,50 @@ const AdminPanel: React.FC<Props> = ({ courses, records, section, onAddRecord, o
 
   const handleSubmitRecord = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newRecord.course_id && newRecord.title && newRecord.date) {
-      await onAddRecord({ ...newRecord, section } as Omit<AcademicRecord, 'id'>);
+    if (!newRecord.course_id || !newRecord.title || !newRecord.date) {
+      alert('Please fill in Course, Title, and Date.');
+      return;
+    }
+
+    try {
+      await onAddRecord({ ...newRecord, section, batch_id: batchId } as Omit<AcademicRecord, 'id'>);
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
       setNewRecord({ type: EntryType.EXTRA_CLASS, date: new Date().toISOString().split('T')[0] });
+    } catch (err: any) {
+      console.error('Error adding record:', err);
+      alert('Failed to add record: ' + (err.message || 'Unknown error'));
     }
   };
 
   const handleSubmitCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const added = await supabaseService.addCourse(newCourse);
+      const added = await supabaseService.addCourse({ ...newCourse, batch_id: batchId });
       onAddCourse?.(added);
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
       setNewCourse({ code: '', name: '', teacher: '', credit: 3 });
-    } catch (err) {
-      alert('Failed to add course');
+    } catch (err: any) {
+      console.error('Error adding course:', err);
+      alert('Failed to add course: ' + (err.message || 'Unknown error'));
     }
   };
 
   const loadGroups = async (courseId: string) => {
-    const groups = await supabaseService.fetchGroups(courseId, section);
+    const groups = await supabaseService.fetchGroups(batchId, courseId, section);
     setActiveCourseGroups(groups);
   };
 
   const handleUpdateGroups = async () => {
     if (!selectedGroupCourse) return;
     try {
-      await supabaseService.updateGroups(selectedGroupCourse, section, activeCourseGroups);
+      await supabaseService.updateGroups(batchId, selectedGroupCourse, section, activeCourseGroups);
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
-    } catch (err) {
-      alert('Failed to update groups');
+    } catch (err: any) {
+      console.error('Error updating groups:', err);
+      alert('Failed to update groups: ' + (err.message || 'Unknown error'));
     }
   };
 

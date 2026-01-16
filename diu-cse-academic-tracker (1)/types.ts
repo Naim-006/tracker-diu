@@ -1,6 +1,11 @@
-
 export type Section = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H';
 export type Theme = 'light' | 'dark';
+
+export interface Batch {
+  id: string;
+  name: string;
+  created_at?: string;
+}
 
 export enum EntryType {
   EXTRA_CLASS = 'EXTRA CLASS',
@@ -32,13 +37,16 @@ export interface UserProfile {
   id: string;
   email: string;
   is_approved: boolean;
+  batch_id: string;
   section: Section;
   sub_section?: string;
   full_name?: string;
+  role?: 'student' | 'CR';
 }
 
 export interface Course {
   id: string;
+  batch_id: string;
   code: string;
   name: string;
   teacher: string;
@@ -47,6 +55,7 @@ export interface Course {
 
 export interface AcademicRecord {
   id: string;
+  batch_id: string;
   course_id: string;
   section: Section;
   sub_section?: string;
@@ -73,8 +82,10 @@ export interface AppNotification {
 }
 
 export interface AppState {
+  batches: Batch[];
   courses: Course[];
   records: AcademicRecord[];
+  selectedBatch: string | null;
   selectedSection: Section | null;
   user: UserProfile | null;
   isLoading: boolean;

@@ -7,10 +7,11 @@ import { supabaseService } from '../supabaseService';
 interface Props {
     courses: Course[];
     section: Section;
+    batchId: string;
     userSubSection?: string;
 }
 
-const GroupRegisterView: React.FC<Props> = ({ courses, section, userSubSection }) => {
+const GroupRegisterView: React.FC<Props> = ({ courses, section, batchId, userSubSection }) => {
     const [selectedCourseId, setSelectedCourseId] = useState(courses[0]?.id || '');
     const [searchQuery, setSearchQuery] = useState('');
     const [groups, setGroups] = useState<any[]>([]);
@@ -26,7 +27,7 @@ const GroupRegisterView: React.FC<Props> = ({ courses, section, userSubSection }
     const loadGroups = async (courseId: string) => {
         setIsLoading(true);
         try {
-            const data = await supabaseService.fetchGroups(courseId, section);
+            const data = await supabaseService.fetchGroups(batchId, courseId, section);
             setGroups(data);
         } finally {
             setIsLoading(false);
@@ -105,8 +106,8 @@ const GroupRegisterView: React.FC<Props> = ({ courses, section, userSubSection }
                                         key={group.id}
                                         onClick={() => setExpandedId(isExpanded ? null : group.id)}
                                         className={`p-6 rounded-[2rem] transition-all cursor-pointer group border-b-4 ${isExpanded
-                                                ? 'bg-indigo-600 border-indigo-500 shadow-2xl text-white'
-                                                : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl border-b-transparent hover:border-b-indigo-500'
+                                            ? 'bg-indigo-600 border-indigo-500 shadow-2xl text-white'
+                                            : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl border-b-transparent hover:border-b-indigo-500'
                                             }`}
                                     >
                                         <div className={`flex items-center justify-between mb-4 pb-3 border-b ${isExpanded ? 'border-white/10' : 'border-slate-50 dark:border-slate-800'}`}>

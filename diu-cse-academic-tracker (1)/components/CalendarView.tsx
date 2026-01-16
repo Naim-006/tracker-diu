@@ -36,11 +36,12 @@ interface Props {
   records: AcademicRecord[];
   courses: Course[];
   section: Section;
+  batchId: string;
   onDateClick: (date: Date) => void;
   userSubSection?: string;
 }
 
-const CalendarView: React.FC<Props> = ({ records, courses, section, onDateClick, userSubSection }) => {
+const CalendarView: React.FC<Props> = ({ records, courses, section, batchId, onDateClick, userSubSection }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [activeSideTab, setActiveSideTab] = useState<'AGENDA' | 'GROUPS'>('AGENDA');
   const [selectedCourse, setSelectedCourse] = useState(courses[0]?.id || '');
@@ -69,9 +70,10 @@ const CalendarView: React.FC<Props> = ({ records, courses, section, onDateClick,
   };
 
   const loadGroups = async (courseId: string) => {
+    if (!courseId) return;
     setIsLoadingGroups(true);
     try {
-      const data = await supabaseService.fetchGroups(courseId, section);
+      const data = await supabaseService.fetchGroups(batchId, courseId, section);
       setGroupSync(data);
     } finally {
       setIsLoadingGroups(false);

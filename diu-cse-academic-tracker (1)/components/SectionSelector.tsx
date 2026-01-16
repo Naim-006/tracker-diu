@@ -86,8 +86,8 @@ const SectionSelector: React.FC<Props> = ({ batches, onSelect }) => {
                     className="group cursor-pointer relative"
                   >
                     <div className={`p-10 transition-all duration-500 text-center relative overflow-hidden rounded-[3rem] h-full flex flex-col items-center justify-center ${hoveredItem === batch.id
-                        ? 'bg-indigo-600 border-indigo-500 shadow-2xl scale-[1.05] z-10 text-white'
-                        : 'glass-pro border-transparent hover:border-indigo-500/30 text-slate-800 dark:text-white'
+                      ? 'bg-indigo-600 border-indigo-500 shadow-2xl scale-[1.05] z-10 text-white'
+                      : 'glass-pro border-transparent hover:border-indigo-500/30 text-slate-800 dark:text-white'
                       }`}>
                       <Layers size={32} className={`mb-4 transition-colors ${hoveredItem === batch.id ? 'text-white' : 'text-indigo-500'}`} />
                       <span className="text-3xl font-black mb-2">{batch.name}</span>
@@ -140,8 +140,8 @@ const SectionSelector: React.FC<Props> = ({ batches, onSelect }) => {
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="flex flex-col gap-2 mt-4" >
                               <button onClick={() => onSelect(selectedBatchId, section)} className="py-2.5 px-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10" > Whole Section </button>
                               <div className="grid grid-cols-2 gap-2">
-                                <button onClick={() => onSelect(selectedBatchId, section, '1')} className="py-2 px-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-white/10" > Grp 1 </button>
-                                <button onClick={() => onSelect(selectedBatchId, section, '2')} className="py-2 px-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-white/10" > Grp 2 </button>
+                                <button onClick={() => onSelect(selectedBatchId, section, '1')} className="py-2 px-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-white/10" > {section}1 </button>
+                                <button onClick={() => onSelect(selectedBatchId, section, '2')} className="py-2 px-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border border-white/10" > {section}2 </button>
                               </div>
                             </motion.div>
                           ) : (

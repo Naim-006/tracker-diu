@@ -21,10 +21,11 @@ interface Props {
   courses: Course[];
   records: AcademicRecord[];
   section: Section;
+  batchId: string;
   userSubSection?: string;
 }
 
-const CourseView: React.FC<Props> = ({ courses, records, section, userSubSection }) => {
+const CourseView: React.FC<Props> = ({ courses, records, section, batchId, userSubSection }) => {
   const [activeCourseId, setActiveCourseId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -53,7 +54,7 @@ const CourseView: React.FC<Props> = ({ courses, records, section, userSubSection
   React.useEffect(() => {
     if (activeCourseId) {
       setIsLoadingGroups(true);
-      supabaseService.fetchGroups(activeCourseId, section).then(data => {
+      supabaseService.fetchGroups(batchId, activeCourseId, section).then(data => {
         setCourseGroups(data);
         setIsLoadingGroups(false);
       });
@@ -181,7 +182,7 @@ const CourseView: React.FC<Props> = ({ courses, records, section, userSubSection
                                     }`}>
                                     {task.type}
                                   </span>
-                                  <span className={`text-[9px] font-black uppercase ${isExpanded ? 'text-indigo-100' : 'text-slate-400'}`}>{task.date}</span>
+                                  <span className={`text-[9px] font-black uppercase ${isExpanded ? 'text-indigo-100' : 'text-slate-400'}`}>{task.date} {task.sub_section ? `[${section}${task.sub_section}]` : ''}</span>
                                 </div>
                                 <h4 className={`text-xs font-black uppercase tracking-tight leading-tight ${isExpanded ? 'text-white' : 'text-slate-800 dark:text-white'}`}>{task.title}</h4>
 
@@ -233,18 +234,21 @@ const CourseView: React.FC<Props> = ({ courses, records, section, userSubSection
                               key={item.id}
                               onClick={() => setExpandedId(isExpanded ? null : item.id)}
                               className={`p-4 rounded-2xl border transition-all cursor-pointer group flex flex-col ${isExpanded
-                                  ? 'bg-emerald-600 border-emerald-500 shadow-lg text-white'
-                                  : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm hover:border-emerald-500/30'
+                                ? 'bg-emerald-600 border-emerald-500 shadow-lg text-white'
+                                : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 shadow-sm hover:border-emerald-500/30'
                                 }`}
                             >
                               <div className="flex items-center justify-between mb-3">
-                                <span className={`text-[8px] font-black uppercase ${isExpanded ? 'text-emerald-100' : 'text-slate-400'}`}>{item.date}</span>
+                                <span className={`text-[8px] font-black uppercase ${isExpanded ? 'text-emerald-100' : 'text-slate-400'}`}>{item.date} {item.sub_section ? `[${section}${item.sub_section}]` : ''}</span>
                                 <span className={`px-1.5 py-0.5 rounded text-[7px] font-black uppercase ${isExpanded ? 'bg-white/20 text-white' : (ENTRY_TYPE_COLORS[item.type as EntryType] || 'bg-slate-100 text-slate-500')
                                   }`}>
                                   {item.type}
                                 </span>
                               </div>
                               <h4 className={`text-xs font-black uppercase leading-tight ${isExpanded ? 'text-white' : 'text-slate-800 dark:text-white'}`}>{item.title}</h4>
+                              {item.sub_section && !isExpanded && (
+                                <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                              )}
 
                               <AnimatePresence>
                                 {isExpanded && (

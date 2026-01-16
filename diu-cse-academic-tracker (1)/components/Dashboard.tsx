@@ -74,8 +74,8 @@ const Dashboard: React.FC<Props> = ({ records, courses, onAction, userProfile })
               <Users size={20} />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Lab Group</p>
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">Group {userProfile?.sub_section || 'All'}</h2>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Group</p>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight">{userProfile?.sub_section ? `${userProfile.section}${userProfile.sub_section}` : 'General'}</h2>
             </div>
           </div>
 
@@ -210,7 +210,7 @@ const Dashboard: React.FC<Props> = ({ records, courses, onAction, userProfile })
                   </div>
                   <h3 className="text-[11px] font-bold text-white uppercase tracking-widest">Lab Classes</h3>
                 </div>
-                <div className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 rounded text-[9px] font-bold uppercase">GROUP {userProfile?.sub_section || '?'}</div>
+                <div className="px-2 py-0.5 bg-emerald-500 text-white rounded text-[9px] font-black uppercase shadow-lg shadow-emerald-500/20">{userProfile?.section}{userProfile?.sub_section || '?'}</div>
               </div>
 
               <div className="space-y-4">
@@ -352,7 +352,7 @@ const Dashboard: React.FC<Props> = ({ records, courses, onAction, userProfile })
                         <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest ${ENTRY_TYPE_COLORS[exam.type] || 'bg-slate-100 text-slate-500'}`}>
                           {exam.type}
                         </span>
-                        {exam.sub_section && <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest px-2 py-0.5 bg-emerald-500/10 rounded">Group {exam.sub_section}</span>}
+                        {exam.sub_section && <span className="text-[8px] font-black text-white uppercase tracking-widest px-2 py-0.5 bg-emerald-500 rounded shadow-sm shadow-emerald-500/30">{userProfile?.section}{exam.sub_section}</span>}
                       </div>
                     </div>
                     <ChevronRight size={16} className="text-slate-700 group-hover:text-white transition-all group-hover:translate-x-1" />

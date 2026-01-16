@@ -1,7 +1,7 @@
 
 import { Course, Section, EntryType } from './types';
 
-export const SECTIONS: Section[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+export const SECTIONS: Section[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S'];
 
 export const INITIAL_COURSES: Course[] = [
   { id: '1', code: 'CSE 112', name: 'Computer Fundamentals', teacher: 'Dr. John Doe', credit: 3 },

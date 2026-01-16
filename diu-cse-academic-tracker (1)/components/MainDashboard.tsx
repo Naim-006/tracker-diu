@@ -252,16 +252,24 @@ const MainDashboard: React.FC<Props> = ({
                                     onClick={() => setIsSectionSwitcherOpen(!isSectionSwitcherOpen)}
                                     className={`flex items-center gap-1 text-[9px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-[0.2em] px-2 py-1 -ml-2 rounded-lg transition-all cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950/30`}
                                 >
-                                    Section {selectedSection}{selectedSubSection ? ` - Group ${selectedSubSection}` : ''} <ArrowLeftRight size={10} className="ml-1" />
+                                    Section {selectedSection}{selectedSubSection ? ` - ${selectedSection}${selectedSubSection}` : ''} <ArrowLeftRight size={10} className="ml-1" />
                                 </div>
 
                                 <AnimatePresence>
                                     {isSectionSwitcherOpen && (
-                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute left-0 mt-2 bg-white dark:bg-slate-900 shadow-2xl rounded-2xl border border-slate-100 dark:border-slate-800 p-2 flex gap-1 z-50 overflow-x-auto max-w-[calc(100vw-48px)] custom-scrollbar shadow-pro" >
-                                            {SECTIONS.map(s => (
-                                                <button key={s} onClick={() => { setSelectedSection(s); setIsSectionSwitcherOpen(false); }} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${selectedSection === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > {s} </button>
-                                            ))}
-                                        </motion.div>
+                                        <div className="flex flex-col gap-3 min-w-[200px]">
+                                            <div className="flex flex-wrap gap-1">
+                                                {SECTIONS.map(s => (
+                                                    <button key={s} onClick={(e) => { e.stopPropagation(); setSelectedSection(s); }} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${selectedSection === s ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > {s} </button>
+                                                ))}
+                                            </div>
+                                            <div className="h-px bg-slate-100 dark:bg-slate-800 my-1" />
+                                            <div className="grid grid-cols-3 gap-1">
+                                                <button onClick={(e) => { e.stopPropagation(); setSelectedSubSection(null); setIsSectionSwitcherOpen(false); }} className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${!selectedSubSection ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > Theory </button>
+                                                <button onClick={(e) => { e.stopPropagation(); setSelectedSubSection('1'); setIsSectionSwitcherOpen(false); }} className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${selectedSubSection === '1' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > {selectedSection}1 </button>
+                                                <button onClick={(e) => { e.stopPropagation(); setSelectedSubSection('2'); setIsSectionSwitcherOpen(false); }} className={`px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${selectedSubSection === '2' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`} > {selectedSection}2 </button>
+                                            </div>
+                                        </div>
                                     )}
                                 </AnimatePresence>
                             </div>
@@ -314,7 +322,7 @@ const MainDashboard: React.FC<Props> = ({
                                 />
                             )}
                             {activeTab === 'calendar' && <CalendarView records={records} courses={courses} onDateClick={() => { }} userSubSection={selectedSubSection || undefined} section={selectedSection!} batchId={selectedBatch!} />}
-                            {activeTab === 'courses' && <CourseView courses={courses} records={records} section={selectedSection} userSubSection={selectedSubSection || undefined} />}
+                            {activeTab === 'courses' && <CourseView courses={courses} records={records} section={selectedSection!} batchId={selectedBatch!} userSubSection={selectedSubSection || undefined} />}
                             {activeTab === 'groups' && <GroupRegisterView courses={courses} section={selectedSection} userSubSection={selectedSubSection || undefined} batchId={selectedBatch!} />}
                             {activeTab === 'admin' && (
                                 canAccessAdmin ? (

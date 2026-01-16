@@ -211,7 +211,10 @@ const CalendarView: React.FC<Props> = ({ records, courses, section, batchId, onD
                           <span className={`px-2 py-0.5 rounded text-[8px] font-black ${ENTRY_TYPE_COLORS[record.type] || 'bg-slate-100 text-slate-500'}`}>
                             {record.type}
                           </span>
-                          <span className="text-[8px] font-black text-slate-400 uppercase">{format(parseISO(record.date), 'MMM dd')}</span>
+                          <div className="flex items-center gap-2">
+                            {record.sub_section && <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[7px] font-black rounded uppercase shadow-sm">{section}{record.sub_section}</span>}
+                            <span className="text-[8px] font-black text-slate-400 uppercase">{format(parseISO(record.date), 'MMM dd')}</span>
+                          </div>
                         </div>
                         <h4 className="text-xs font-black text-slate-800 dark:text-white uppercase leading-tight mb-3">{record.title}</h4>
 
@@ -285,8 +288,8 @@ const CalendarView: React.FC<Props> = ({ records, courses, section, batchId, onD
                     filteredGroups.map(group => (
                       <div key={group.id} className="bg-white dark:bg-slate-800/50 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-50 dark:border-slate-700">
-                          <span className="text-[10px] font-black text-indigo-600 uppercase">Group {group.group_number}</span>
-                          <span className="text-[8px] font-black text-slate-400">SUB {group.sub_section}</span>
+                          <span className="text-[10px] font-black text-indigo-600 uppercase">Group {section}{group.group_number}</span>
+                          <span className="text-[8px] font-black text-slate-400">SUB {section}{group.sub_section}</span>
                         </div>
                         <div className="space-y-2">
                           {group.group_members?.map((m: any) => (

@@ -166,8 +166,8 @@ const AdminPanel: React.FC<Props> = ({ courses, records, section, batchId, onAdd
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Target Group</label>
                 <select className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:border-indigo-500 font-bold dark:text-white" value={newRecord.sub_section || ''} onChange={e => setNewRecord({ ...newRecord, sub_section: e.target.value || undefined })} >
                   <option value="">Whole Section</option>
-                  <option value="1">Group 1 (Lab)</option>
-                  <option value="2">Group 2 (Lab)</option>
+                  <option value="1">{section}1 (Lab)</option>
+                  <option value="2">{section}2 (Lab)</option>
                 </select>
               </div>
 
@@ -215,8 +215,8 @@ const AdminPanel: React.FC<Props> = ({ courses, records, section, batchId, onAdd
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Sub-Section Context</label>
                   <div className="flex gap-4">
-                    <button onClick={() => setGroupTargetSub('1')} className={`flex-1 py-4 rounded-2xl font-black text-xs transition-all ${groupTargetSub === '1' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>G1 (Group 1-5)</button>
-                    <button onClick={() => setGroupTargetSub('2')} className={`flex-1 py-4 rounded-2xl font-black text-xs transition-all ${groupTargetSub === '2' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>G2 (Group 1-5)</button>
+                    <button onClick={() => setGroupTargetSub('1')} className={`flex-1 py-4 rounded-2xl font-black text-xs transition-all ${groupTargetSub === '1' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>{section}1 (Group 1-5)</button>
+                    <button onClick={() => setGroupTargetSub('2')} className={`flex-1 py-4 rounded-2xl font-black text-xs transition-all ${groupTargetSub === '2' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>{section}2 (Group 1-5)</button>
                   </div>
                 </div>
               </div>
@@ -229,7 +229,7 @@ const AdminPanel: React.FC<Props> = ({ courses, records, section, batchId, onAdd
                       <div key={gNum} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-700">
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200 dark:border-slate-700">
                           <h4 className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Group {gNum}</h4>
-                          <span className="text-[8px] font-black text-slate-400">G{groupTargetSub}</span>
+                          <span className="text-[8px] font-black text-slate-400">{section}{groupTargetSub}</span>
                         </div>
                         <div className="space-y-3">
                           {[0, 1, 2, 3, 4].map(mIdx => (
@@ -322,7 +322,7 @@ const AdminPanel: React.FC<Props> = ({ courses, records, section, batchId, onAdd
                       <div className="flex items-center gap-2">
                         <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-[9px] font-black rounded-lg text-slate-500 dark:text-slate-400 uppercase">{r.type}</span>
                         {r.sub_section && (
-                          <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-[8px] font-black rounded uppercase">G{r.sub_section}</span>
+                          <span className="px-1.5 py-0.5 bg-emerald-500 text-white text-[8px] font-black rounded uppercase shadow-sm shadow-emerald-500/20">{section}{r.sub_section}</span>
                         )}
                       </div>
                     </td>

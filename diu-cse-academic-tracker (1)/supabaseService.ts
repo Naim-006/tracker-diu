@@ -176,10 +176,9 @@ export const supabaseService = {
     if (subSection) {
       // Fetch records for the whole section OR specific sub-section
       query = query.or(`sub_section.is.null,sub_section.eq.${subSection}`);
-    } else {
-      // Default to theory only (sub_section is null) if not specified
-      query = query.is('sub_section', null);
     }
+    // If no subSection is provided, we fetch everything for this section/batch
+    // (no additional filtering needed)
 
     const { data, error } = await query.order('date', { ascending: false });
     if (error) return [];

@@ -38,7 +38,7 @@ const PendingApprovalPage: React.FC = () => {
                     <div className="space-y-4 text-slate-500 dark:text-slate-400 font-medium mb-10 leading-relaxed px-4">
                         <p>Hi <span className="text-amber-500 font-bold">{profile?.full_name || 'Representative'}</span>,</p>
                         <p>Your Class Representative account is currently in the **verification queue**.</p>
-                        <p className="text-sm">For security reasons, all CR accounts must be manually verified by the administrator to prevent unauthorized access.</p>
+                        <p className="text-sm">For security reasons, all CR accounts must be manually verified by the administrator to prevent unauthorized access.It usually takes some hours to complete.</p>
                     </div>
 
                     <div className="flex flex-col gap-4">
@@ -75,3 +75,4 @@ const PendingApprovalPage: React.FC = () => {
 };
 
 export default PendingApprovalPage;
+

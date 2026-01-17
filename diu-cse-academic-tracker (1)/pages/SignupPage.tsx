@@ -11,12 +11,14 @@ const SignupPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
 
     const [batches, setBatches] = useState<Batch[]>([]);
     const [form, setForm] = useState({
         email: '',
         password: '',
+        confirmPassword: '',
         name: '',
         batch_id: '',
         section: 'A' as Section,
@@ -36,6 +38,12 @@ const SignupPage: React.FC = () => {
 
         if (!form.batch_id) {
             setError('Please select your batch.');
+            setIsLoading(false);
+            return;
+        }
+
+        if (form.password !== form.confirmPassword) {
+            setError('Passwords do not match.');
             setIsLoading(false);
             return;
         }
@@ -103,7 +111,7 @@ const SignupPage: React.FC = () => {
                                         type="text"
                                         required
                                         className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold dark:text-white"
-                                        placeholder="221-35-XXX"
+                                        placeholder="2XX-XX-XXX"
                                         value={form.student_id}
                                         onChange={(e) => setForm({ ...form, student_id: e.target.value })}
                                     />
@@ -170,7 +178,7 @@ const SignupPage: React.FC = () => {
                                     type="email"
                                     required
                                     className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold dark:text-white"
-                                    placeholder="name@diu.edu.bd"
+                                    placeholder="id@diu.edu.bd"
                                     value={form.email}
                                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                                 />
@@ -195,6 +203,28 @@ const SignupPage: React.FC = () => {
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-500 transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 px-1">Confirm Security Key</label>
+                            <div className="relative group">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors pointer-events-none" size={18} />
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    required
+                                    className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800/60 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold dark:text-white"
+                                    placeholder="••••••••"
+                                    value={form.confirmPassword}
+                                    onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-500 transition-colors"
+                                >
+                                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                         </div>

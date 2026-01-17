@@ -63,7 +63,7 @@ const PendingApprovalPage: React.FC = () => {
                     <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-4">Urgent Access Required?</p>
                         <div className="flex items-center justify-center gap-4">
-                            <a href="mailto:admin@diu.edu.bd" className="flex items-center gap-2 text-indigo-500 hover:text-indigo-400 transition-colors text-xs font-bold px-4 py-2 bg-indigo-500/10 rounded-full">
+                            <a href="https://wa.me/01969507606" className="flex items-center gap-2 text-indigo-500 hover:text-indigo-400 transition-colors text-xs font-bold px-4 py-2 bg-indigo-500/10 rounded-full">
                                 <ShieldAlert size={14} /> Contact Admin
                             </a>
                         </div>

@@ -85,7 +85,7 @@ const LoginPage: React.FC = () => {
                         <div className="space-y-2">
                             <div className="flex items-center justify-between px-1">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Security Key</label>
-                                <Link to="/forgot-password" size={18} className="text-[9px] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-600 transition-colors">Forgot?</Link>
+
                             </div>
                             <div className="relative group">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors pointer-events-none" size={18} />

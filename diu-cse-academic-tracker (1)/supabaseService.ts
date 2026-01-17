@@ -32,7 +32,7 @@ export const supabaseService = {
       password: pass,
       options: {
         data: { full_name: name, section: section, role: role, batch_id: batchId, sub_section: subSection },
-        emailRedirectTo: window.location.origin
+        emailRedirectTo: `${window.location.origin}/pending-approval`
       }
     });
     if (error) throw error;
